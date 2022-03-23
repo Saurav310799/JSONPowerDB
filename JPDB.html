@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <title>Registration Page for Login2Xplore Assesment</title>
+  </head>
+  <body>
+      <br>
+      <h1 class="text-center border-bottom border-danger"> Registration Page</h1><br>
+   
+      <form>
+        <div class="form-row">
+          <div class="col-md-4 mb-3">
+            <label for="personFirst">First name</label>
+            <input type="text" class="form-control" id="personFirst" placeholder="First name"  required>
+          </div><br>
+          <div class="col-md-4 mb-3">
+            <label for="personLast">Last name</label>
+            <input type="text" class="form-control" id="personLast" placeholder="Last name"  required>
+          </div><br>
+          <div class="col-md-4 mb-3">
+            <label for="validationDefaultUsername">Username</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="username123">@</span>
+              </div><br>
+              <input type="text" class="form-control" id="username1" placeholder="Username" aria-describedby="inputGroupPrepend2" required>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-6 mb-3">
+            <label for="city1">City</label>
+            <input type="text" class="form-control" id="city1" placeholder="City" required>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="state1">State</label>
+            <input type="text" class="form-control" id="state1" placeholder="State" required>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="zip1">Zip</label>
+            <input type="text" class="form-control" id="zip1" placeholder="Zip" required>
+          </div>
+        </div><br>
+        <button class="btn btn-primary" type="submit" onclick="saveInfo();">Submit form</button>
+      </form>
+  </body>
+  <script>
+    $("personFirst").focus();
+    alert($("personFirst"))
+ function validateAndGetFormData() {
+            var personFirstVar = $("#personFirst").val();
+            if (personFirstVar === "") {
+                alert("Name is required !!");
+                $("#personFirst").focus();
+                return "";
+            }
+            var personLastVar = $("#personLast").val();
+            if (personLastVar === "") {
+                alert("Last name is required");
+                $("#personLast").focus();
+                return "";
+            }
+            var username1Var = $("#username1").val();
+            if (username1Var === "") {
+                alert("Username is reqired value");
+                $("#username1").focus();
+                return "";
+            }
+
+            var city1Var = $("#city1").val();
+            if (city1Var === "") {
+                alert("reqired value");
+                $("#city1").focus();
+                return "";
+            }
+            var state1Var = $("#state1").val();
+            if (state1Var === "") {
+                alert("reqired value");
+                $("#state1").focus();
+                return "";
+            }
+            var zip1Var = $("#zip1").val();
+            if (zip1Var === "") {
+                alert("reqired value");
+                $("#zip1").focus();
+                return "";
+            }
+
+
+            var jsonStrObj = {
+                personFirst: personFirstVar,
+                personLast: personLastVar,
+                username1: username1Var,
+                city1: city1Var,
+                state1: state1Var,
+                zip1: zip1Var,
+
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+        function createPUTRequest(connToken, jsonObj, dbName, relName) {
+            var putRequest = "{\n"
+                + "\"token\" : \""
+                + connToken
+                + "\","
+                + "\"dbName\": \""
+                + dbName
+                + "\",\n" + "\"cmd\" : \"PUT\",\n"
+                + "\"rel\" : \""
+                + relName + "\","
+                + "\"jsonStr\": \n"
+                + jsonObj
+                + "\n"
+                + "}";
+            return putRequest;
+        }
+
+        function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+            var url = dbBaseUrl + apiEndPointUrl;
+            var jsonObj;
+            $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+            }).fail(function (result) {
+                var dataJsonObj = result.responseText;
+                jsonObj = JSON.parse(dataJsonObj);
+            });
+            return jsonObj;
+        }
+        function resetForm() {
+            $("#personFirst").val("")
+            $("#personLast").val("");
+            $("#username1").val("");
+            $("#city1").val("");
+            $("#state1").val("");
+            $("#zip1").val("");
+            $("#personFirst").focus();
+        }
+
+
+
+      function saveInfo(){
+        var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+            var putReqStr = createPUTRequest("90938781|-31948831585880074|90945921",
+                jsonStr, "Person", "PER-REL");
+
+                alert(putReqStr);
+            jQuery.ajaxSetup({ async: false });
+            var resultObj = executeCommand(putReqStr,
+                "http://api.login2explore.com:5577", "/api/iml");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+       
+      
+      }
+  </script>
+</html>
